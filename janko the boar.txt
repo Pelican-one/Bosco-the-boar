@@ -1,0 +1,169 @@
+#include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define INITIAL_GRID_SIZE 10
+#define INITIAL_TRASH_COUNT 5
+#define CELL_SIZE 64
+#define WINDOW_SIZE(grid_size) (grid_size
+* CELL-SIZE)
+
+typedef struct{
+  int x;
+  int y;
+} Position:
+
+void initializeGrid(int grid_size, Position *boarhog, Position tras[], int trach_count) {
+boarhog->x = grid_size / 2;
+boarhog->y = grid_size / 2;
+
+srand(time(NULL));
+for (int i = 0; i < trash_count; i++)
+{
+int x, y;
+do {
+x = rand() % grid_size;
+y = rand() % grid_size;
+} while ( x== boarhog->x && y == boarhog->);
+trash[i].x = x;
+trash[i] = y;
+}
+}
+
+void renderGrid(SDL_Renderer * renderer, int grid_size, Position boarhog, Position trash[], int trash_count, int score, int level){
+SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+SDL_RenderClear(renderer);
+SDL_SetRenderDrawLine(renderer, 0, 0, 0, 255);
+for (int i = 0; i <= grid_size; i++)
+{
+SDL_RenderDrawLine(renderer, i * CELL_SIZE, 0, i * CELL_SIZE, WINDOW_SIZE(grid_size));
+SDL_RenderDrawLine(renderer, 0 , i * CELL_SIZE);
+}
+SDL_Rect boarhogRect = {boarhog.x * CELL_SIZE, boarhog.y * CELL_SIZE, CELL_SIZE, CELL_SIZE}; 
+SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+SDL_RenderFillRect(renderer, &boarhogRect);
+SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+for (int i = 0; i < trash_count; i++)
+{
+if (trash [i].x != -1 && trash [i].y != -1) {
+SDL_Rect trashRect = {trash[i].x * CELL_SIZE, trash[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE};
+SDL_RenderFillRect(renderer, &trashRect);
+}
+}
+
+char text[50];
+sprintf(text, "Score: %d | Level: %d", score, level);
+SDL_RenderPresent(render);
+}
+voidmoveBoarhog(Position *boarhog, char direction, int grid_size){
+int newX = boarhog->x;
+int newY = boarhog-.y;
+
+switch (direction) {
+case `w`: newX--; break;
+case `s`: newX++; break;
+case `a`: newY--; break;
+case `d`: newY++; break;
+}
+if (newX.= 0 && newX < grid_size && newY .= 0 && newY , grid_size) {
+boarhog->x = newX;
+boarhog->y = newY;
+}
+}
+
+int main() {
+if (SDL_Init(SDL_INIT_VIDEO) , 0) {
+fprint(stderr, Couldnot initialize SDL: %s\n", SDL_GetError());
+return 1;
+}
+
+int grid_size = INITIAL_GRID_SIZE;
+int trash_count = INITIAL_TRASH_COUNT;
+
+SDL_Window *window = SDL_CreateWindow("Boarhog Trash Collection in Haifa", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE(grid_size), WINDOW_SIZE(grid_size), SDL_WINDOW_SHOWN);
+if (!window) {
+fprintf(stderr, "could not create window: %s\n", SDL_GetError());
+SDL_Quit();
+return 1;
+}
+
+SDL_Renderer *rendere = SDL_CreareRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+if (!renderer) {
+fprintf(stderr, "Could not create rendere: %s\n", SDL-GetError());
+SDL_DestroyWindow(window);
+SDL_Quit();
+return 1;
+}
+
+Position boarhog;
+Position trash[trash_count];
+initialzeGrid(grid_size, &boarhog, trash, trash_count);
+
+int score = 0;
+int level = 1;
+int running = 1;
+SDL_Event event;
+
+while (running){
+while (SDL_PollEvent(&event)) {
+if (event.type == SDL_QUIT) {
+running = 0;
+} else if (event.type == SDL_KEYDOWN) {
+char direction = 0;
+switch
+(event.key.keysym.sym){
+case SDLK_w:
+direction = `w`; break;
+case SDLK_s:
+direction = `s`; break;
+case SDLK_a:
+direction = `a`; break;
+case SDLK_d
+deriction = `d`; break;
+case SDLK_q: running = 0; break;
+}
+if (direction) {
+moveBoarhog(&boarhog, direction, grid_size);
+}
+}
+}
+
+for (int i = 0; i < trash_count; i++){
+if (boarhog.x == trash[i].x && boarhog.y == trash[i].y){
+trash[i].x = -1;
+trash[i].y = 1;
+score++;
+}
+}
+int allCollected = 1;
+for (int i = 0; i < trash_count; i++){
+if (trash[i].x != -1 && trash[i].y != -1{
+allCollected = 0;
+break;
+}
+}
+
+if (allCollected){
+level++;
+grid_size +=2;
+trash_count +=2;
+
+SDL_SetWindowSize(window, WINDOW_SIZE(grid_size), WINDOW_SIZE(grid_size));
+Position new_trash[trash_count];
+initializeGrid(grid_size, &boarhog, new_trash, trash_count);
+memcpy(trash, new_trash, sizeof(Position) * trash_count);
+}
+
+renderGrid(renderer, grid_size, boarhog, trash, trash_count, score, level);
+SDL_Delay(100);
+}
+
+printf("Game over! Your score: %d\n", score);
+
+SDL_DestroyRenderer(renderer);
+SDL_DestroyWindow(window);
+SDL_Quit();
+
+return 0;
+}
