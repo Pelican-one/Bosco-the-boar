@@ -9,6 +9,14 @@
 #define WINDOW_SIZE(grid_size) (grid_size
 * CELL-SIZE)
 
+git clone
+https://github.com/Pelican-one/Bosco-the-boar.git
+
+cd your-repository-name
+git add.
+git commit -m "Add Web build files"
+git push origin main
+
 typedef struct{
   int x;
   int y;
